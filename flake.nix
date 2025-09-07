@@ -26,24 +26,50 @@
     {
       packages = forAllSystems (
         { pkgs }:
-        {
+        rec {
+          danjo = pkgs.stdenvNoCC.mkDerivation {
+            name = "danjo";
+            version = "1.1";
+
+            src = pkgs.fetchurl {
+              url = "https://cdn.jsdelivr.net/gh/fonts-archive/Danjo/Danjo.otf";
+              name = "Danjo.otf";
+              hash = "sha256-zBEXy3RoKrv5BAGk79mmqdpeX90QwzZmdb3qyfOfmiw=";
+            };
+
+            unpackPhase = ''
+              runHook preUnpack
+              cp $src Danjo.otf
+              runHook postUnpack
+            '';
+
+            installPhase = ''
+              runHook preInstall
+              install -Dm644 Danjo.otf $out/share/fonts/opentype/Danjo-bold.otf
+              runHook postInstall
+            '';
+          };
           default = pkgs.stdenvNoCC.mkDerivation {
             name = "profile";
             nativeBuildInputs = with pkgs; [
               resvg
-              pretendard
+              danjo
             ];
             src = ./.;
 
             buildPhase = ''
               runHook preBuild
+              resvg --list-fonts \
+                --skip-system-fonts \
+                --font-family=Danjo-bold \
+                --use-font-file=${danjo}/share/fonts/opentype/Danjo-bold.otf
               ${builtins.concatStringsSep "\n" (
                 map
                   (dim: ''
                     resvg profile.svg profile-${dim}.png -w ${dim} -h ${dim} \
                       --skip-system-fonts \
-                      --font-family=Pretendard \
-                      --use-font-file=${pkgs.pretendard}/share/fonts/opentype/Pretendard-Regular.otf
+                      --font-family=Danjo-bold \
+                      --use-font-file=${danjo}/share/fonts/opentype/Danjo-bold.otf
                   '')
                   [
                     "16"
