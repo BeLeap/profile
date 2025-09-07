@@ -37,6 +37,7 @@
 
             buildPhase = ''
               runHook preBuild
+              resvg profile.svg profile-16.png -w 16 -h 16
               resvg profile.svg profile-250.png -w 250 -h 250
               runHook postBuild
             '';
