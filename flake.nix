@@ -37,8 +37,19 @@
 
             buildPhase = ''
               runHook preBuild
-              resvg profile.svg profile-16.png -w 16 -h 16 --font-family Pretendard
-              resvg profile.svg profile-250.png -w 250 -h 250 --font-family Pretendard
+              ${builtins.concatStringsSep "\n" (
+                map
+                  (dim: ''
+                    resvg profile.svg profile-${dim}.png -w ${dim} -h ${dim} \
+                      --skip-system-fonts \
+                      --font-family=Pretendard \
+                      --use-font-file=${pkgs.pretendard}/share/fonts/opentype/Pretendard-Regular.otf
+                  '')
+                  [
+                    "16"
+                    "250"
+                  ]
+              )}
               runHook postBuild
             '';
 
