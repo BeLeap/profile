@@ -25,6 +25,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v5
       - uses: actions/download-artifact@v4
         with:
           name: result
@@ -32,6 +33,7 @@ jobs:
       - run: |
           ls -alR
           mv result _site
+          cp profile.svg _site/
       - uses: actions/upload-pages-artifact@v4
   deploy-pages:
     needs: generate-pages
@@ -59,5 +61,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           ls -alR
+          cp profile.svg result/
           gh release create --target "$GITHUB_REF" --generate-notes \
-            "v$(date +%s)" result/*.png
+            "v$(date +%s)" result/*
