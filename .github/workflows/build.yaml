@@ -18,6 +18,7 @@ jobs:
       - run: nix build
       - uses: actions/upload-artifact@v4
         with:
+          name: result
           path: result/
   generate-pages:
     needs: build
@@ -25,8 +26,11 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
+          name: result
           path: result/
-      - run: mv result _site
+      - run: |
+          ls -alR
+          mv result _site
       - uses: actions/upload-pages-artifact@v4
   deploy-pages:
     needs: generate-pages
@@ -47,9 +51,11 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: artifact
+          name: result
+          path: result/
       - env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          ls -alR
           gh release create --target "$GITHUB_REF" --generate-notes \
             "v$(date +%s)" result/*.png
