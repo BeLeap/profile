@@ -33,7 +33,8 @@ jobs:
       - run: |
           ls -alR
           mv result _site
-          cp profile.svg _site/
+          mv profile.svg _site/
+          mv files/index.html _site/
       - uses: actions/upload-pages-artifact@v4
   deploy-pages:
     needs: generate-pages
