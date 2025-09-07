@@ -43,12 +43,13 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
     steps:
       - uses: actions/download-artifact@v4
         with:
           path: result/
-      - if: github.ref == 'refs/heads/master'
-        env:
+      - run: ls -alR
+      - env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create --target "$GITHUB_REF" --generate-notes \
